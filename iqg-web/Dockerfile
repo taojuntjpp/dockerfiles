@@ -35,8 +35,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
 
 
 
-
-
 RUN yum install -y openssh openssh-clients openssh-server passwd
 
 RUN useradd work && echo "work:111111" | chpasswd
