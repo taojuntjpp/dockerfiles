@@ -12,7 +12,7 @@ rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
 rm -f /lib/systemd/system/basic.target.wants/*;\
 rm -f /lib/systemd/system/anaconda.target.wants/*;
 
-RUN yum install -y wget which openssl openssl-devel --nogpgcheck
+RUN yum install -y wget which openssl openssl-devel ifconfig --nogpgcheck
 
 RUN yum -y install openssh-server
 
@@ -21,6 +21,9 @@ EXPOSE 22
 RUN ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
 RUN ssh-keygen -f /etc/ssh/ssh_host_ecdsa_key -N '' -t ecdsa
 RUN ssh-keygen -f /etc/ssh/ssh_host_ed25519_key -N '' -t ed25519
+
+
+RUN yum install -y lsof net-tools logrotate strace sshpass initscripts crontabs htop dstat rsync lsync git
 
 #RUN echo "root:jump" | chpasswd
 
