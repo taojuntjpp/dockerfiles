@@ -1,0 +1,12 @@
+/ace/log/nginx/*log {
+    create 0644 work work
+    daily
+    rotate 10
+    missingok
+    notifempty
+    compress
+    sharedscripts
+    postrotate
+        /bin/kill -USR1 `cat /ace/run/nginx.pid 2>/dev/null` 2>/dev/null || true
+    endscript
+}

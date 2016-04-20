@@ -1,0 +1,12 @@
+/ace/log/php-fpm/*log {
+	create 0644 work work
+    daily
+    rotate 10
+    missingok
+    notifempty
+    sharedscripts
+    delaycompress
+    postrotate
+        /bin/kill -SIGUSR1 `cat /ace/run/php-fpm.pid 2>/dev/null` 2>/dev/null || true
+    endscript
+}

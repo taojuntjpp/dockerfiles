@@ -1,4 +1,5 @@
-FROM centos:7
+FROM registry.acs.aliyun.com/open/centos:3.0.0
+#FROM centos:latest
 
 MAINTAINER "taojun" <taojun@doweidu.com>
 
@@ -11,51 +12,27 @@ rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
 rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
 rm -f /lib/systemd/system/basic.target.wants/*;\
 rm -f /lib/systemd/system/anaconda.target.wants/*;
+VOLUME [ "/sys/fs/cgroup" ]
 
-RUN yum install -y wget nginx openssl openssl-devel --nogpgcheck
 
-RUN mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+RUN yum install -y wget which ifconfig lsof net-tools logrotate strace sshpass crontabs htop dstat rsync lsync git initscripts --nogpgcheck
 
-WORKDIR /etc/yum.repos.d
 
-RUN wget -O CentOS-Base.repo https://lug.ustc.edu.cn/wiki/_export/code/mirrors/help/centos?codeblock=3 
+RUN useradd work && su work -l -c"mkdir -p /home/work/.ssh && chmod 700 /home/work/.ssh && echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDfwFPFqt6ZIV/cTj7wNx+K2jVs2Iz2ArT/x72Y2HIfq5GZgKKwJ6zrPEauulou+4Hrk/dNCNHJ8VkCPXBCpU7R0tuY4joz0Ex+aHacF813yx6Sjx/UPrKya6dTtv3TZAYFKRgKBXCHtuPoWVkUpZCj6AUQ1yUIwPxzW2YJ8G7d4Q== taojun@doweidu.com' > /home/work/.ssh/authorized_keys && chmod 644 /home/work/.ssh/authorized_keys"
 
-RUN yum install -y lsof net-tools logrotate strace sshpass
-RUN yum install -y initscripts crontabs htop dstat rsync lsync git
-
-RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+RUN yum install -y epel-release --nogpgcheck
 RUN rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
 
-RUN yum install -y php56w php56w-opcache nginx openssl openssl-devel --nogpgcheck
+RUN yum install -y nginx gcc --nogpgcheck
+EXPOSE 8080
+
+RUN yum install -y php56w php56w-opcache --nogpgcheck
 RUN yum install -y yum-plugin-replace --nogpgcheck
-RUN yum install -y php56w-cli php56w-bcmath php56w-soap php56w-common php56w-devel php56w-fpm php56w-gd php56w-mbstring php56w-mcrypt php56w-mysql php56w-pdo php56w-pear php56w-pecl-geoip php56w-pecl-imagick php56w-pecl-xdebug php56w-xml --nogpgcheck
-RUN echo no| pecl install mongo && echo 'extension=mongo.so' > /etc/php.d/mongo.ini 
-RUN ln -s /etc/nginx nginx
+RUN yum install -y php56w-cli php56w-bcmath php56w-soap php56w-common php56w-devel php56w-fpm php56w-gd php56w-mbstring php56w-mcrypt php56w-mysql php56w-pdo php56w-pear php56w-pecl-geoip php56w-pecl-imagick php56w-pecl-xdebug php56w-xml php56w-pecl-redis --nogpgcheck
+
+RUN echo no| pecl install mongodb && echo 'extension=mongodb.so' > /etc/php.d/mongodb.ini 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
-
-
-
-RUN yum install -y openssh openssh-clients openssh-server passwd
-
-RUN useradd work && echo "work:111111" | chpasswd
-
-
-RUN ssh-keygen -q -t rsa -b 2048 -f /etc/ssh/ssh_host_rsa_key -N ''
-RUN ssh-keygen -q -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N ''
-RUN ssh-keygen -t dsa -f /etc/ssh/ssh_host_ed25519_key  -N ''
-
-RUN sed -i "s/#UsePrivilegeSeparation.*/UsePrivilegeSeparation no/g" /etc/ssh/sshd_config
-#RUN sed -i "s/UsePAM.*/UsePAM no/g" /etc/ssh/sshd_config
-#RUN sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
-
-RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
-RUN sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
-
-#RUN cd /etc/ssh && chmod 0644 * && chmod 0600 ssh_host_ED25519_key ssh_host_ecdsa_key ssh_host_dsa_key  ssh_host_rsa_key
-
-
-RUN su work -l -c"mkdir -p /home/work/.ssh && echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDfwFPFqt6ZIV/cTj7wNx+K2jVs2Iz2ArT/x72Y2HIfq5GZgKKwJ6zrPEauulou+4Hrk/dNCNHJ8VkCPXBCpU7R0tuY4joz0Ex+aHacF813yx6Sjx/UPrKya6dTtv3TZAYFKRgKBXCHtuPoWVkUpZCj6AUQ1yUIwPxzW2YJ8G7d4Q== taojun@doweidu.com' > /home/work/.ssh/authorized_keys"
-RUN mkdir -p /ace/log/php  /ace/log/nginx /ace/log/php-fpm /ace/run
+RUN mkdir -p /ace/log/php /ace/upload /ace/log/nginx /ace/log/php-fpm /ace/run
 
 RUN phpmemory_limit=512M && \
     timezone='Asia\/Shanghai' && \
@@ -78,12 +55,15 @@ RUN phpmemory_limit=512M && \
     sed -i 's/slowlog = .*/slowlog = '${ace_path}'log\/php-fpm\/www-slow.log/' /etc/php-fpm.d/www.conf && \
     sed -i 's/listen = .*/listen = '${ace_path}'run\/php5-fpm.sock/' /etc/php-fpm.d/www.conf && \
     sed -i 's/php_admin_value\[error_log\] = .*/php_admin_value\[error_log\] = '${ace_path}'log\/php-fpm\/www-error.log/' /etc/php-fpm.d/www.conf && \
-    sed -i 's/;date.timezone =/date.timezone = '${timezone}'/' /etc/php.ini
+    sed -i 's/;date.timezone =/date.timezone = '${timezone}'/' /etc/php.ini && \
+    sed -i 's/;always_populate_raw_post_data = .*/always_populate_raw_post_data = -1/' /etc/php.ini
 
-EXPOSE 22
-#EXPOSE 80
+RUN mkdir ~/.ssh && chmod 644 /root/.ssh
 
-CMD ["/usr/sbin/sshd", "-D"]
-
-#VOLUME [ "/sys/fs/cgroup" ]
-#CMD ["/usr/sbin/init"]
+COPY upload/api.v3.iqianggou.com.conf   /etc/nginx/conf.d/
+COPY upload/start.sh                    /acs/bin/start
+COPY upload/nginx.conf                  /ace/upload/nginx.conf
+COPY upload/nginx_log_rotate            /ace/upload/nginx_log_rotate
+COPY upload/php-fpm_log_rotate          /ace/upload/php-fpm_log_rotate
+COPY upload/wqy-microhei.ttc            /ace/upload/wqy-microhei.ttc
+COPY upload/authorized_keys             /ace/upload/authorized_keys
