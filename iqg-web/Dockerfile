@@ -20,7 +20,7 @@ RUN yum install -y wget which ifconfig lsof net-tools logrotate strace sshpass c
 
 RUN useradd work && su work -l -c"mkdir -p /home/work/.ssh && chmod 700 /home/work/.ssh && echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDfwFPFqt6ZIV/cTj7wNx+K2jVs2Iz2ArT/x72Y2HIfq5GZgKKwJ6zrPEauulou+4Hrk/dNCNHJ8VkCPXBCpU7R0tuY4joz0Ex+aHacF813yx6Sjx/UPrKya6dTtv3TZAYFKRgKBXCHtuPoWVkUpZCj6AUQ1yUIwPxzW2YJ8G7d4Q== taojun@doweidu.com' > /home/work/.ssh/authorized_keys && chmod 644 /home/work/.ssh/authorized_keys"
 
-RUN yum install -y epel-release --nogpgcheck
+RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 RUN rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
 
 RUN yum install -y nginx gcc --nogpgcheck
@@ -30,7 +30,7 @@ RUN yum install -y php56w php56w-opcache --nogpgcheck
 RUN yum install -y yum-plugin-replace --nogpgcheck
 RUN yum install -y php56w-cli php56w-bcmath php56w-soap php56w-common php56w-devel php56w-fpm php56w-gd php56w-mbstring php56w-mcrypt php56w-mysql php56w-pdo php56w-pear php56w-pecl-geoip php56w-pecl-imagick php56w-pecl-xdebug php56w-xml php56w-pecl-redis --nogpgcheck
 
-RUN echo no| pecl install mongodb && echo 'extension=mongodb.so' > /etc/php.d/mongodb.ini 
+RUN echo no| pecl install mongo && echo 'extension=mongo.so' > /etc/php-zts.d/mongo.ini 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 RUN mkdir -p /ace/log/php /ace/upload /ace/log/nginx /ace/log/php-fpm /ace/run
 
@@ -58,12 +58,13 @@ RUN phpmemory_limit=512M && \
     sed -i 's/;date.timezone =/date.timezone = '${timezone}'/' /etc/php.ini && \
     sed -i 's/;always_populate_raw_post_data = .*/always_populate_raw_post_data = -1/' /etc/php.ini
 
-RUN mkdir ~/.ssh && chmod 644 /root/.ssh
+RUN mkdir ~/.ssh && chmod 644 /root/.ssh && mkdir -p /ace/conf
+
 
 COPY upload/api.v3.iqianggou.com.conf   /etc/nginx/conf.d/
 COPY upload/start.sh                    /acs/bin/start
-COPY upload/nginx.conf                  /ace/upload/nginx.conf
-COPY upload/nginx_log_rotate            /ace/upload/nginx_log_rotate
-COPY upload/php-fpm_log_rotate          /ace/upload/php-fpm_log_rotate
-COPY upload/wqy-microhei.ttc            /ace/upload/wqy-microhei.ttc
-COPY upload/authorized_keys             /ace/upload/authorized_keys
+COPY upload/nginx.conf                  /ace/conf/nginx.conf
+COPY upload/nginx_log_rotate            /ace/conf/nginx_log_rotate
+COPY upload/php-fpm_log_rotate          /ace/conf/php-fpm_log_rotate
+COPY upload/wqy-microhei.ttc            /ace/conf/wqy-microhei.ttc
+COPY upload/authorized_keys             /ace/conf/authorized_keys

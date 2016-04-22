@@ -32,9 +32,9 @@ else
     touch ${initFile}
 fi
 
-\cp /ace/upload/nginx.conf /etc/nginx/nginx.conf
-\cp /ace/upload/wqy-microhei.ttc /ace/data/fonts/wqy-microhei.ttc
-\cp /ace/upload/authorized_keys /root/.ssh/authorized_keys
+\cp /ace/conf/nginx.conf /etc/nginx/nginx.conf
+\cp /ace/conf/wqy-microhei.ttc /ace/data/fonts/wqy-microhei.ttc
+\cp /ace/conf/authorized_keys /root/.ssh/authorized_keys
 
 chown -R work:work /ace
 chown -R work:work /var/log/nginx
@@ -45,11 +45,11 @@ su work -l -c"SYMFONY_ENV=prod /ace/code/iqgapi/app/console cache:clear"
 /usr/sbin/nginx 
 su work -c -l "/usr/sbin/php-fpm -D"
 
-su work -l -c"\cp /ace/upload/authorized_keys /home/work/.ssh/authorized_keys"
+su work -l -c"\cp /ace/conf/authorized_keys /home/work/.ssh/authorized_keys"
 su work -l -c"logrotate /etc/logrotate.d/nginx_log_rotate -s /ace/log/logrotate.status.tmp"
 su work -l -c"logrotate /etc/logrotate.d/php-fpm_log_rotate -s /ace/log/logrotate.status.tmp"
-su work -l -c"nginx"
-su work -l -c"service php-fpm start"
+#su work -l -c"nginx"
+#su work -l -c"service php-fpm start"
 
 echo success
 
