@@ -48,8 +48,6 @@ su work -c -l "/usr/sbin/php-fpm -D"
 su work -l -c"\cp /ace/conf/authorized_keys /home/work/.ssh/authorized_keys"
 su work -l -c"logrotate /etc/logrotate.d/nginx_log_rotate -s /ace/log/logrotate.status.tmp"
 su work -l -c"logrotate /etc/logrotate.d/php-fpm_log_rotate -s /ace/log/logrotate.status.tmp"
-#su work -l -c"nginx"
-#su work -l -c"service php-fpm start"
 
 echo success
 

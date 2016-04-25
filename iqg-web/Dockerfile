@@ -30,7 +30,7 @@ RUN yum install -y php56w php56w-opcache --nogpgcheck
 RUN yum install -y yum-plugin-replace --nogpgcheck
 RUN yum install -y php56w-cli php56w-bcmath php56w-soap php56w-common php56w-devel php56w-fpm php56w-gd php56w-mbstring php56w-mcrypt php56w-mysql php56w-pdo php56w-pear php56w-pecl-geoip php56w-pecl-imagick php56w-pecl-xdebug php56w-xml php56w-pecl-redis --nogpgcheck
 
-RUN echo no| pecl install mongo && echo 'extension=mongo.so' > /etc/php-zts.d/mongo.ini 
+RUN echo no| pecl install mongo && echo 'extension=mongo.so' > /etc/php.d/mongo.ini 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 RUN mkdir -p /ace/log/php /ace/upload /ace/log/nginx /ace/log/php-fpm /ace/run
 
