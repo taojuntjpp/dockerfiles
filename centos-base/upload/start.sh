@@ -32,9 +32,9 @@ else
     touch ${initFile}
 fi
 
-\cp /ace/upload/nginx.conf /etc/nginx/nginx.conf
-\cp /ace/upload/wqy-microhei.ttc /ace/data/fonts/wqy-microhei.ttc
-\cp /ace/upload/authorized_keys /root/.ssh/authorized_keys
+\cp /ace/conf/nginx.conf /etc/nginx/nginx.conf
+\cp /ace/conf/wqy-microhei.ttc /ace/data/fonts/wqy-microhei.ttc
+\cp /ace/conf/authorized_keys /root/.ssh/authorized_keys
 
 chown -R work:work /ace
 chown -R work:work /var/log/nginx
