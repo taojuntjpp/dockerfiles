@@ -58,13 +58,13 @@ RUN phpmemory_limit=512M && \
     sed -i 's/;date.timezone =/date.timezone = '${timezone}'/' /etc/php.ini && \
     sed -i 's/;always_populate_raw_post_data = .*/always_populate_raw_post_data = -1/' /etc/php.ini
 
-RUN mkdir ~/.ssh && chmod 644 /root/.ssh && mkdir -p /ace/conf
+RUN mkdir ~/.ssh && chmod 644 /root/.ssh && mkdir -p /ace/upload_conf
 
 
-COPY upload/api.v3.iqianggou.com.conf   /etc/nginx/conf.d/
-COPY upload/start.sh                    /acs/bin/start
-COPY upload/nginx.conf                  /ace/conf/nginx.conf
-COPY upload/nginx_log_rotate            /ace/conf/nginx_log_rotate
-COPY upload/php-fpm_log_rotate          /ace/conf/php-fpm_log_rotate
-COPY upload/wqy-microhei.ttc            /ace/conf/wqy-microhei.ttc
-COPY upload/authorized_keys             /ace/conf/authorized_keys
+COPY upload/api.satellite.iqianggou.com.conf    /etc/nginx/conf.d/
+COPY upload/start.sh                            /acs/bin/start
+COPY upload/nginx.conf                          /ace/upload_conf/nginx.conf
+COPY upload/nginx_log_rotate                    /ace/upload_conf/nginx_log_rotate
+COPY upload/php-fpm_log_rotate                  /ace/upload_conf/php-fpm_log_rotate
+COPY upload/wqy-microhei.ttc                    /ace/upload_conf/wqy-microhei.ttc
+COPY upload/authorized_keys                     /ace/upload_conf/authorized_keys
