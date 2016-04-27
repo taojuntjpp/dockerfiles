@@ -6,7 +6,7 @@ if [ -e ${initFile} ]
 then
     cd /ace/code/satellite  
     rm -rf /ace/code/satellite/app/logs
-    ln -s /ace/log/iqg /ace/code/satellite/app/logs
+    ln -s /ace/log/satellite /ace/code/satellite/app/logs
     mkdir -p /ace/code/satellite/web/uploads/branches
     mkdir /ace/code/satellite/web/uploads/brands
     mkdir /ace/code/satellite/web/uploads/images
@@ -18,16 +18,16 @@ else
               ${acePath}data/fonts -p \
               ${acePath}data/cronjobs -p \
               ${acePath}data/nginx/client_body -p
-    if [ ! -d "/ace/log/iqg" ]
+    if [ ! -d "/ace/log/satellite" ]
     then
-      mkdir -p /ace/log/iqg
+      mkdir -p /ace/log/satellite
     fi
 
     if [ -d "/ace/code/satellite/app/logs" ]
     then
       unlink /ace/code/satellite/app/logs
       rm -rf /ace/code/satellite/app/logs
-      ln -s /ace/log/iqg /ace/code/satellite/app/logs
+      ln -s /ace/log/satellite /ace/code/satellite/app/logs
     fi
     touch ${initFile}
 fi
